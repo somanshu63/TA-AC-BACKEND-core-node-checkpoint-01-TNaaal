@@ -1,0 +1,43 @@
+.main{
+    text-align: center;
+    width: 800px;
+    margin: 0 auto;
+}
+body{
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+
+}
+.main h1{
+    text-transform: uppercase;
+}
+.main q{
+    color: gray;
+}
+.flex{
+    display: flex;
+    justify-content: space-between;
+}
+.about-button a{
+    padding: 0.5rem 1rem;
+    background-color: lightgray;
+    color: black;
+    text-decoration: none;
+}
+.about-button{
+    width: 200px;
+
+}
+.subject{
+    color: grey;
+}
+figure img{
+    width: 150px;
+}
+form{
+    width: 500px;
+    margin: 5rem auto;
+}
+form input{
+    display: block;
+    margin: 0.5rem;
+}
