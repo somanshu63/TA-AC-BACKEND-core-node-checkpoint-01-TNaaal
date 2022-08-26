@@ -21,7 +21,6 @@ const getAllDirFiles = function(dirPath) {
   
     return arrayOfFiles
   }
-getAllDirFiles(useDir);
 
 var server = http.createServer(handleRequest);
 
@@ -38,10 +37,10 @@ function handleRequest(req, res) {
         if(req.method == 'POST' && parsedUrl.pathname == '/form'){
             store = querystring.parse(store);
             var susername = store.username;
-            var parsedData = JSON.stringify(store);
+            var stringifyData = JSON.stringify(store);
             fs.open(useDir + susername + '.json', "wx", (err, fd) => {
                 if(err) console.log(err);
-                fs.writeFile(fd, parsedData, (err) => {
+                fs.writeFile(fd, stringifyData, (err) => {
                     if(err) console.log(err);
                     fs.close(fd, (err) => {
                         if(err) console.log(err);
@@ -89,7 +88,7 @@ function handleRequest(req, res) {
             res.setHeader('content-type', 'text/html');
             fs.readFile(useDir + username + '.json', (err, user) => {
                 if(err) console.log(err);
-                user = JSON.parse(user.toString());
+                user = JSON.parse(user);
                 res.write(`<h2>${user.name}</h2>`);
                 res.write(`<h3>${user.email}</h3>`);
                 res.write(`<h4>${user.username}</h4>`);
@@ -99,6 +98,7 @@ function handleRequest(req, res) {
             });
         }
         if(req.method == 'GET' && parsedUrl.pathname == '/users'){
+            getAllDirFiles(useDir);
             res.setHeader('content-type', 'text/html');
             res.write('<h1>List Of All Users</h1>');
             for (let i = 0; i < arrayOfFiles.length; i++) {
