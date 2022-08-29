@@ -6,22 +6,6 @@ const useDir = __dirname + '/contacts/';
 let object = [];
 
 
-const getAllDirFiles = function(dirPath) {
-    files = fs.readdirSync(dirPath)
-  
-    arrayOfFiles = [];
-  
-    files.forEach(function(file) {
-      if (fs.statSync(dirPath + "/" + file).isDirectory()) {
-        arrayOfFiles = getAllDirFiles(dirPath + "/" + file, arrayOfFiles)
-      } else {
-        arrayOfFiles.push(file)
-      }
-    })
-  
-    return arrayOfFiles
-  }
-
 var server = http.createServer(handleRequest);
 
 function handleRequest(req, res) {
@@ -37,6 +21,9 @@ function handleRequest(req, res) {
         if(req.method == 'POST' && parsedUrl.pathname == '/form'){
             store = querystring.parse(store);
             var susername = store.username;
+            if(susername == ""){
+                return res.end('username cannot be empty');
+            }
             var stringifyData = JSON.stringify(store);
             fs.open(useDir + susername + '.json', "wx", (err, fd) => {
                 if(err) console.log(err);
@@ -87,7 +74,10 @@ function handleRequest(req, res) {
         if(req.method == 'GET' && req.url == `/users?username=${username}`){
             res.setHeader('content-type', 'text/html');
             fs.readFile(useDir + username + '.json', (err, user) => {
-                if(err) console.log(err);
+                if(err) {
+                    console.log(err);
+                    return res.end(err);
+                }
                 user = JSON.parse(user);
                 res.write(`<h2>${user.name}</h2>`);
                 res.write(`<h3>${user.email}</h3>`);
@@ -98,20 +88,21 @@ function handleRequest(req, res) {
             });
         }
         if(req.method == 'GET' && parsedUrl.pathname == '/users'){
-            getAllDirFiles(useDir);
+            var arrayOfFiles = fs.readdirSync(useDir);
             res.setHeader('content-type', 'text/html');
             res.write('<h1>List Of All Users</h1>');
             for (let i = 0; i < arrayOfFiles.length; i++) {
                 fs.readFile(useDir + arrayOfFiles[i], (err, data) => {
                     data = JSON.parse(data.toString());
                     object[i] = `<h2>Name: ${data.name}</h2><h3>Username: ${data.username}</h3><h4>Email: ${data.email}</h4><h4>Age: ${data.age}</h4><h4>Bio: ${data.bio}</h4>`;
-                    res.write(object[i]);
+                    if(i == arrayOfFiles.length - 1){
+                        res.end(object[i]);  
+                    }else{
+                        res.write(object[i]);
+                    }
 
                 });
-            }
-            setTimeout(() => {
-                res.end();  
-            }, 2000)       
+            }      
         }
     });
 }
